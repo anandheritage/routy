@@ -44,11 +44,18 @@
 /* 0 */
 /***/ (function(module, exports) {
 
-	/* eslint-disable */
+	sendMessageTobackgroundScript = function (action, parameters, callback) {
+	  let request = {
+	    id: 'bgs/configurationHandler',
+	    action,
+	    parameters
+	  };
 
-	import HeaderMod from './headerMod';
-
-	window.hm = new HeaderMod();
+	  if (callback) {
+	    request.expectingResponse = true;
+	  }
+	  chrome.runtime.sendMessage(request, callback);
+	};
 
 /***/ })
 /******/ ]);

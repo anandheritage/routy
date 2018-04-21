@@ -3,10 +3,11 @@ var webpack = require('webpack');
 
 module.exports = {
     entry: {
-      background: "./backgroundScript/index.js"
+      background: "./backgroundScript/index.js",
+      popup: "./popupscript"
     },
     output: {
-        filename: "./chromeExtension/[name].js"
+        filename: "./chromeExtension/[name].js",
     },
     module: {
         loaders: [{
