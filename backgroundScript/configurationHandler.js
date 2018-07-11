@@ -5,24 +5,32 @@ class configurationHandler {
     this.events = {
       'change':[]
     }
-		this.services = [
-			{
-				name: 'flights-core',
-				value: 'flights-multi-staging',
-				enabled: true,
-				data: ['flights-multi-staging']
-			}
-		];
+    this.services = localStorage.services ? JSON.parse(localStorage.services) : [];
+    this.preferences = localStorage.preferences ? JSON.parse(localStorage.preferences) : {
+      service_url: null,
+      namespaces: null,
+      url_filters: null
+    }
 
-		this.urlFilters = { urls: ['<all_urls>'] };
+    this.updateFilters();
+
+    // Use '<all_urls>' to intercept headers for all domains
+		this.urlFilters = { urls: this.filters };
 
     this.extraInfoSpec = ['requestHeaders', 'blocking'];
 
     chrome.runtime.onMessage.addListener(this.onMessageHandler.bind(this));
-	}
+  }
+  
+  updateFilters(){
+    this.filters = [];
+    if(this.preferences.url_filters != null && this.preferences.url_filters != '') this.filters.push('*://' + this.preferences.url_filters + '/*');
+    this.urlFilters = { urls: this.filters };
+  }
 
   setServices(services){
     this.services = services;
+    localStorage.services = JSON.stringify(services);
   }
 
   getServices(){
@@ -40,6 +48,17 @@ class configurationHandler {
 
   setExtraInfoSpec(extraInfoSpec){
     this.extraInfoSpec = extraInfoSpec;
+    this.emit('change');
+  }
+
+  getPreferences(){
+    return this.preferences;
+  }
+
+  setPreferences(preferences){
+    this.preferences = preferences;
+    this.updateFilters();
+    localStorage.preferences = JSON.stringify(preferences);
     this.emit('change');
   }
 
